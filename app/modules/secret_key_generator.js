@@ -1,0 +1,7 @@
+const crypto = require('crypto');
+const key = crypto.randomBytes(32).toString('hex').toUpperCase();
+console.log(key,key.length)
+
+// BDBF4BDF92A273124C745FA2C0D1E465C74CE25B5FA6AD19E13C3E920F4A7051
+
+// 568007D664D1CB4D600FE47AD39CEBBE9FD35F6917E78EFF1CA99644C469C94F
