@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const createError = require('http-errors');
 const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+const cors = require('cors');
 
 const { AllRoutes } = require('./routes/router');
 
@@ -23,6 +24,7 @@ module.exports = class Application{
         this.errorHandler();
     }
     configApplication(){
+        this.#app.use(cors());
         this.#app.use(morgan('dev'));
         this.#app.use(express.json());
         this.#app.use(express.urlencoded({extended:false}));

@@ -1,7 +1,7 @@
 const createHttpError = require("http-errors");
 const { UserModel } = require("../../../../models/user.model");
 const { EXPIRES_IN } = require("../../../../modules/constants");
-const { randomNumberGenerator, signAccessToken } = require("../../../../modules/functions");
+const { randomNumberGenerator, signAccessToken, verifyRefreshToken, signRefreshToken } = require("../../../../modules/functions");
 const { getOtpSchema, checkOtpSchema } = require("../../../validators/user/auth.schema");
 const Controller = require("../../controller");
 
@@ -34,13 +34,33 @@ class UserAuthController extends Controller{
             const now = Date.now();
             if(+user.otp.expiresIn < now) throw createHttpError.Unauthorized('کد وارد شده منقضی شده است');
             const accessToken = await signAccessToken(user._id);
+            const refreshToken = await signRefreshToken(user._id);
+
             return res.status(200).json({
                 data:{
-                    accessToken
+                    accessToken,
+                    refreshToken
                 }
             })
         }catch(error){
             next(error);
+        }
+    }
+    async refreshToken(req,res,next){
+        try{
+            const {refreshToken} = req.body;
+            if(!refreshToken) throw createHttpError.BadRequest('خطا بابت مقادیر ناکافی');
+            const {mobile,userID} = await verifyRefreshToken(refreshToken);
+            const accessToken = await signAccessToken(userID);
+            const newRefreshToken = await signRefreshToken(userID);
+            return res.status(200).json({
+                data:{
+                    accessToken,
+                    refreshToken:newRefreshToken
+                }
+            })
+        }catch(err){
+            next(err);
         }
     }
     async saveUser(mobile,code){
