@@ -4,8 +4,21 @@
   "description": "store project with nodejs(Express.js , mongoDB , redis , graphQL , socket.io)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index",
+    "dev": "nodemon index"
   },
   "author": "Mohammad Hosein Paymard",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "auto-bind": "^4.0.0",
+    "express": "^4.18.1",
+    "http-errors": "^2.0.0",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.5.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.19",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.5.0"
+  }
 }
