@@ -1,8 +1,8 @@
 const createHttpError = require("http-errors");
 const { UserModel } = require("../../../../models/user.model");
-const { EXPIRES_IN } = require("../../../../modules/constants");
 const { randomNumberGenerator, signAccessToken, verifyRefreshToken, signRefreshToken } = require("../../../../modules/functions");
 const { getOtpSchema, checkOtpSchema } = require("../../../validators/user/auth.schema");
+const { EXPIRES_IN } = require('../../../../modules/constants')
 const Controller = require("../../controller");
 
 class UserAuthController extends Controller{
@@ -25,6 +25,7 @@ class UserAuthController extends Controller{
             next(error);
         }
     }
+    
     async checkOtp(req,res,next){
         try{
             const validation = await checkOtpSchema.validateAsync(req.body);
@@ -69,7 +70,7 @@ class UserAuthController extends Controller{
             return (await this.updateUser(mobile,{
                 otp:{
                     code,
-                    expiresIn : EXPIRES_IN
+                    expiresIn : EXPIRES_IN()
                 }
             }));
         }
@@ -77,7 +78,7 @@ class UserAuthController extends Controller{
             mobile,
             otp:{
                 code,
-                expiresIn : EXPIRES_IN
+                expiresIn : EXPIRES_IN()
             }
         }));
     }
