@@ -22,6 +22,7 @@ module.exports = class Application{
         this.createRoutes();
         this.createServer();
         this.errorHandler();
+        this.initRedis();
     }
     configApplication(){
         this.#app.use(cors());
@@ -90,5 +91,8 @@ module.exports = class Application{
                 }
             });
         })
+    }
+    initRedis(){
+        require('./modules/init_redis')
     }
 }
