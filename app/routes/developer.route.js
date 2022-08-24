@@ -49,6 +49,7 @@ router.get("/password-hash/:password",(req,res,next)=>{
  *              200:
  *                  description: success
  */
+
  router.get("/getRandomNumber/:digit",(req,res,next)=>{
     const {digit} = req.params;
     const digitInt = parseInt(digit) || 1;
