@@ -9,6 +9,7 @@ const router = require('express').Router();
  *      description: action of admin (add,remove,edit and any do)
  */
 
+
 /**
  * @swagger
  *  /admin/category/add:
@@ -99,7 +100,7 @@ router.get('/all',CategoryController.getAllCategories)
  *  /admin/category/remove/{id}:
  *      delete:
  *          tags: [Admin-Panel]
- *          summary: get All Of Categories
+ *          summary: remove category by id
  *          parameters:
  *              -   in: path
  *                  name: id
@@ -116,6 +117,29 @@ router.get('/all',CategoryController.getAllCategories)
  *                  description: internalservererror
  */
 router.delete('/remove/:id',CategoryController.removeCategory)
+
+/**
+ * @swagger
+ *  /admin/category/{id}:
+ *      get:
+ *          tags: [Admin-Panel]
+ *          summary: find category by id
+ *          parameters:
+ *              -   in: path
+ *                  name: id
+ *                  type: string
+ *                  required: true
+ *          responses:
+ *              200:
+ *                  description: success
+ *              400:
+ *                  description: badrequest
+ *              401:
+ *                  description: unauthorized
+ *              500:
+ *                  description: internalservererror
+ */
+ router.get('/:id',CategoryController.getCategoryById)
 
 module.exports = {
     CategoryRoutes : router

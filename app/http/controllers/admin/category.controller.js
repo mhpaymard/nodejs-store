@@ -28,7 +28,17 @@ class CategoryController extends Controller{
         try{
             const {id} = req.params;
             const category = await this.checkExistCategory(id);
-            const deleteResult = await CategoryModel.deleteOne({_id:category._id});
+            // const deleteResult = await CategoryModel.deleteOne({_id:category._id});
+            const deleteResult = await CategoryModel.deleteMany({
+                $or:[
+                    {
+                        _id:category._id
+                    },
+                    {
+                        parent:category._id
+                    }
+                ]
+            })
             if(deleteResult.deletedCount == 0) throw createHttpError.InternalServerError('حذف دسته بندی انجام نشد');
             return res.status(200).json({
                 data:{
@@ -49,12 +59,43 @@ class CategoryController extends Controller{
     }
     async getAllCategories(req,res,next){
         try{
+            // const categories = await CategoryModel.aggregate([
+            //     {
+            //         $lookup:{
+            //             from:'categories',
+            //             localField:'_id',
+            //             foreignField:'parent',
+            //             as:'children'
+            //         }
+            //     },
+            //     {
+            //         $project:{
+            //             __v:0,
+            //             'children.__v':0,
+            //             'children.parent':0
+            //         }
+            //     },
+            //     {
+            //         $match:{
+            //             parent:undefined
+            //         }
+            //     }
+            // ]);
+            
             const categories = await CategoryModel.aggregate([
                 {
-                    $lookup:{
+                    $match:{
+                        parent:undefined
+                    }
+                },
+                {
+                    $graphLookup:{
                         from:'categories',
-                        localField:'_id',
-                        foreignField:'parent',
+                        startWith:'$_id',
+                        connectFromField:'_id',
+                        connectToField:'parent',
+                        maxDepth:6,
+                        depthField:'depth',
                         as:'children'
                     }
                 },
@@ -62,15 +103,9 @@ class CategoryController extends Controller{
                     $project:{
                         __v:0,
                         'children.__v':0,
-                        'children.parent':0
-                    }
-                },
-                {
-                    $match:{
-                        parent:undefined
                     }
                 }
-            ]);
+            ])
             return res.status(200).json({
                 data:{
                     statusCode:200,
@@ -83,7 +118,38 @@ class CategoryController extends Controller{
     }
     async getCategoryById(req,res,next){
         try{
-
+            const {id} = req.params;
+            const checkCategory = await this.checkExistCategory(id);
+            const category = await CategoryModel.aggregate([
+                {
+                    $match:{
+                        _id:checkCategory._id
+                    }
+                },
+                {
+                    $graphLookup:{
+                        from:'categories',
+                        startWith:'$_id',
+                        connectFromField:'_id',
+                        connectToField:'parent',
+                        maxDepth:6,
+                        depthField:'depth',
+                        as:'children'
+                    }
+                },
+                {
+                    $project:{
+                        __v:0,
+                        'children.__v':0,
+                    }
+                }
+            ])
+            return res.status(200).json({
+                data:{
+                    statusCode:200,
+                    category
+                }
+            })
         }catch(err){
             next(err);
         }
