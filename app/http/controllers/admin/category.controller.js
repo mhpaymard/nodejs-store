@@ -1,6 +1,6 @@
 const createHttpError = require("http-errors");
 const { CategoryModel } = require("../../../models/category.model");
-const { addCategorySchema } = require("../../validators/admin/category.schema");
+const { addCategorySchema, updateCategorySchema } = require("../../validators/admin/category.schema");
 const Controller = require("../controller");
 
 class CategoryController extends Controller{
@@ -52,7 +52,22 @@ class CategoryController extends Controller{
     }
     async editCategory(req,res,next){
         try{
-
+            const {id} = req.params;
+            const validation = await updateCategorySchema.validateAsync(req.body)
+            const {title} = validation;
+            const category = await this.checkExistCategory(id);
+            const resultOfUpdate = await CategoryModel.updateOne({_id:category._id},{
+                $set:{
+                    title
+                }
+            });
+            if(resultOfUpdate.modifiedCount==0) throw createHttpError.InternalServerError('بروزرسانی دسته بندی با خطا مواجه شد');
+            return res.status(200).json({
+                data:{
+                    statusCode:200,
+                    message:'دسته بندی با موفقیت بروزرسانی شد'
+                }
+            })
         }catch(err){
             next(err);
         }
@@ -82,30 +97,32 @@ class CategoryController extends Controller{
             //     }
             // ]);
             
-            const categories = await CategoryModel.aggregate([
-                {
-                    $match:{
-                        parent:undefined
-                    }
-                },
-                {
-                    $graphLookup:{
-                        from:'categories',
-                        startWith:'$_id',
-                        connectFromField:'_id',
-                        connectToField:'parent',
-                        maxDepth:6,
-                        depthField:'depth',
-                        as:'children'
-                    }
-                },
-                {
-                    $project:{
-                        __v:0,
-                        'children.__v':0,
-                    }
-                }
-            ])
+            // const categories = await CategoryModel.aggregate([
+            //     {
+            //         $match:{
+            //             parent:undefined
+            //         }
+            //     },
+            //     {
+            //         $graphLookup:{
+            //             from:'categories',
+            //             startWith:'$_id',
+            //             connectFromField:'_id',
+            //             connectToField:'parent',
+            //             maxDepth:6,
+            //             depthField:'depth',
+            //             as:'children'
+            //         }
+            //     },
+            //     {
+            //         $project:{
+            //             __v:0,
+            //             'children.__v':0,
+            //         }
+            //     }
+            // ])
+
+            const categories = await CategoryModel.find({parent:undefined},{__v:0})
             return res.status(200).json({
                 data:{
                     statusCode:200,
