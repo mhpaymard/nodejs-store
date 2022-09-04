@@ -6,6 +6,14 @@ const { redisClient } = require('./init_redis');
 function randomNumberGenerator(){
     return Math.floor((Math.random()*89999)+10000);
 }
+function randomUIdGenerator(){
+    const letter = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let randomString = '';
+    while(randomString.length<5){
+        randomString += `${letter?.[Math.floor(Math.random()*letter.length)] || ''}`;
+    }
+    return randomString;
+}
 function signAccessToken(userID){
     return new Promise(async (resolve,reject)=>{
         try{
@@ -64,5 +72,6 @@ module.exports={
     randomNumberGenerator,
     signAccessToken,
     signRefreshToken,
-    verifyRefreshToken
+    verifyRefreshToken,
+    randomUIdGenerator
 }
