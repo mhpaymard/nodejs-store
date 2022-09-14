@@ -14,7 +14,7 @@ const blogSchema = new Schema({
     short_text:{type:String,required:true},
     image:{type:String,required:true,trim:true},
     tags:{type:[String],default:[]},
-    category:{type:[Types.ObjectId],required:true}, 
+    category:{type:[Types.ObjectId],default:[]}, 
     comments:{type:[commentSchema],default:[]},
     like:{type:[Types.ObjectId],ref:"users",default:[]},
     dislike:{type:[Types.ObjectId],ref:"users",default:[]},

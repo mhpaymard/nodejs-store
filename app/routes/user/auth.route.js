@@ -72,11 +72,11 @@ router.post('/check-otp',UserAuthController.checkOtp);
  *  /user/refreshToken:
  *      post:
  *          summary: send refresh token for get new accessToken and refreshToken
- *          description: 
+ *          description: get new accessToken and refreshToken
  *          tags: [User-Authentication]
  *          parameters:
- *              -   name: refreshToken
- *                  in: body
+ *              -   in: formData
+ *                  name: refreshToken
  *                  required: true
  *                  type: string
  *          responses:

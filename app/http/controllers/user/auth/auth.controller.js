@@ -33,10 +33,16 @@ class UserAuthController extends Controller{
             const user = await UserModel.findOne({mobile,"otp.code":parseInt(code)});
             if(!user) throw createHttpError.BadRequest('کد وارد شده نادرست است');
             const now = Date.now();
+            console.log(user.otp.expiresIn,now);
             if(+user.otp.expiresIn < now) throw createHttpError.Unauthorized('کد وارد شده منقضی شده است');
+            user.otp={
+                code:parseInt(code),
+                expiresIn:now
+            }
+            await user.save();
             const accessToken = await signAccessToken(user._id);
             const refreshToken = await signRefreshToken(user._id);
-
+            
             return res.status(200).json({
                 data:{
                     accessToken,

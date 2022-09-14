@@ -7,7 +7,7 @@ function multerErrorMapper(error,req,res,next){
     else if(error?.code === 'LIMIT_FILE_COUNT') message = 'تعداد عکس آپلود شده بیش از حد مجاز است';
     if(message.length>0) return next(createHttpError.BadRequest(message));
     else{
-        next(error);
+        next(createHttpError.BadRequest(error?.message));
     }
 }
 

@@ -1,6 +1,5 @@
 const path = require('path');
 
-const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const createError = require('http-errors');
@@ -13,7 +12,8 @@ const { AllRoutes } = require('./routes/router');
 module.exports = class Application{
     #PORT;
     #DB_URL;
-    #app = express();
+    #express = require('express');
+    #app = this.#express();
     constructor({PORT,DB_URL}){
         this.#PORT = PORT;
         this.#DB_URL = DB_URL;
@@ -27,9 +27,9 @@ module.exports = class Application{
     configApplication(){
         this.#app.use(cors());
         this.#app.use(morgan('dev'));
-        this.#app.use(express.json());
-        this.#app.use(express.urlencoded({extended:false}));
-        this.#app.use(express.static(path.join(__dirname,'..','public')));
+        this.#app.use(this.#express.json());
+        this.#app.use(this.#express.urlencoded({extended:true}));
+        this.#app.use(this.#express.static(path.join(__dirname,'..','public')));
         this.#app.use('/api-doc',swaggerUI.serve,swaggerUI.setup(swaggerJsDoc({
             swaggerDefinition:{
                 info:{
@@ -81,6 +81,7 @@ module.exports = class Application{
             next(createError.NotFound("آدرس مورد نظر یافت نشد"))
         });
         this.#app.use((error,req,res,next)=>{
+            console.log(error)
             const serverError = createError.InternalServerError();
             const status = error?.status || serverError.status;
             const message = error?.message || serverError.message;
